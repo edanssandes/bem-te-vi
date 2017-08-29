@@ -33,4 +33,7 @@ Download: [bemtevi-0.1.0059a.jar](versoes/bemtevi-0.1.0059a.jar?raw=true)
 
 ### Observações:
 
+<p align="justify">
 Por se tratar de um software de uso gratuito, os desenvolvedores se eximem de qualquer responsabilidade por falhas e erros que possam ocorrer na ferramenta ou por problemas derivados a partir de seu uso. As certidões originais, emitidas pelos órgãos do poder público, devem ser consideradas as únicas fontes de informação juridicamente válidas. Deste modo, o uso das informações e relatórios produzidos pela ferramenta é de inteira responsabilidade do usuário e devem ser verificadas com as fontes originais.
+</p>
+
