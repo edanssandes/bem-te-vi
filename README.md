@@ -1,6 +1,8 @@
 # Bem-te-vi
 <p align="justify">
-O <b>Bem-te-vi</b> é um aplicativo destinado a auxiliar no gerenciamento, catalogação e validação de arquivos de certidões pública brasileiras. O processo de validação é dividido em duas etapas: 1) identificar o tipo de certidão, extraindo todas as informações existentes tais como CPF/CNPJ, Nome, código de autenticação, valdiade, etc; 2) Validar o código de autenticação no site do órgão emissor, conferindo se a certidão é válida e se existe alguma informação adulterada. 
+O <b>Bem-te-vi</b> é um aplicativo destinado a auxiliar no gerenciamento, catalogação e validação de arquivos de certidões pública brasileiras. O processo de validação é dividido em duas etapas: 
+1. identificar o tipo de certidão, extraindo todas as informações existentes tais como CPF/CNPJ, Nome, código de autenticação, valdiade, etc; 
+2. Validar o código de autenticação no site do órgão emissor, conferindo se a certidão é válida e se existe alguma informação adulterada. 
 </p>
 
 Obs.: as certidões precisam estar no formato PDF e deve estar no modo "pesquisável" (não é aceito arquivos escaneados).
@@ -24,7 +26,8 @@ As certidões atualmente aceitas pelo Bem-te-vi são:
 
 ### Download
 
-Última Versão: bemtevi-0.1.0059a
+Última Versão: 0.1.0059a
+
 Download: [bemtevi-0.1.0059a.jar](versoes/bemtevi-0.1.0059a.jar?raw=true)
 
 ### Observações:
