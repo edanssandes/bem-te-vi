@@ -3,8 +3,12 @@
 O <b>Bem-te-vi</b> é um aplicativo destinado a auxiliar no gerenciamento, catalogação e validação de arquivos de certidões pública brasileiras. O processo de validação é dividido em duas etapas: 
 </p>
 
+<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/logo/logo.png" align="left" height="180" hspace="50">
+
+<p align="justify">
 1. identificar o tipo de certidão, extraindo todas as informações existentes tais como CPF/CNPJ, Nome, código de autenticação, valdiade, etc; 
 2. Validar o código de autenticação no site do órgão emissor, conferindo se a certidão é válida e se existe alguma informação adulterada. 
+</p>
 
 Obs.: as certidões precisam estar no formato PDF e deve estar no modo "pesquisável" (não são aceitos arquivos escaneados).
 
