@@ -1,10 +1,12 @@
 # Bem-te-vi
+<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/logo/logo.png" align="left" height="160" hspace="50">  
+
 <p align="justify">
 O <b>Bem-te-vi</b> é um aplicativo destinado a auxiliar no gerenciamento, catalogação e validação de arquivos de certidões pública brasileiras. 
 As certidões precisam estar no formato PDF e deve estar no modo pesquisável (não são aceitos arquivos escaneados).
 </p>
 
-<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/logo/logo.png" align="left" height="160" hspace="50">  
+
 
 
 ### Público Alvo:
