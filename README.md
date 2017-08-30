@@ -46,16 +46,16 @@ Por se tratar de um software de uso gratuito, os desenvolvedores se eximem de qu
 
 ### Screenshots:
 
-<div style="float: left;">
-Janela Principal:
+<span style="float: left;">
+Janela Principal:<br>
 <img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/screenshots/screenshot.png" align="center" height="200" hspace="20"> 
-</div>
-<div style="float: left;">
-Certidões Carregadas:
+</span>
+<span style="float: left;">
+Certidões Carregadas:<br>
 <img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/screenshots/screenshot_certidoes.png" align="center" height="200" hspace="20"> 
-</div>
-<div style="float: left;">
-Relatório de validação:
+</span>
+<span style="float: left;">
+Relatório de validação:<br>
 <img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/screenshots/screenshot_navegador.png" align="center" height="200" hspace="20"> 
-</div>
+</span>
 
