@@ -26,9 +26,9 @@ As certidões atualmente aceitas pelo Bem-te-vi são:
 
 ### Download
 
-Última Versão: 0.1.0059a
+Última Versão: 0.1.0060a
 
-Download: [bemtevi-0.1.0059a.jar](versoes/bemtevi-0.1.0059a.jar?raw=true)
+Download: [bemtevi-0.1.0060a.jar](versoes/bemtevi-0.1.0060a.jar?raw=true)
 
 ### Processo de Validação
 
