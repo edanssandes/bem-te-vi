@@ -4,7 +4,7 @@
 
 <p align="justify">
 O <b>Bem-te-vi</b> é um aplicativo destinado a auxiliar no gerenciamento, catalogação e validação de arquivos de certidões pública brasileiras. 
-As certidões precisam estar no formato PDF e deve estar no modo pesquisável (não são aceitos arquivos escaneados).
+As certidões precisam estar no formato PDF em modo pesquisável (não são aceitos arquivos escaneados).
 </p>
 
 
