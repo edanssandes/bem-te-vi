@@ -8,9 +8,9 @@ O <b>Bem-te-vi</b> é um aplicativo destinado a auxiliar no gerenciamento, catal
 <p align="justify">
 O processo de validação é dividido em duas etapas: 
 
-1. identificar o tipo de certidão, extraindo todas as informações existentes tais como Nome, CPF/CNPJ, código de autenticação, data de validade, etc; 
+   1. identificar o tipo de certidão, extraindo todas as informações existentes tais como Nome, CPF/CNPJ, código de autenticação, data de validade, etc; 
   
-1. Validar o código de autenticação no site do órgão emissor, conferindo se a certidão é válida e se existe alguma informação adulterada. 
+   2. Validar o código de autenticação no site do órgão emissor, conferindo se a certidão é válida e se existe alguma informação adulterada. 
 </p>
 
 ### Público Alvo:
