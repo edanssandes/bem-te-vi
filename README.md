@@ -44,3 +44,9 @@ O processo de validação das certidões é dividido em duas etapas:
 Por se tratar de um software de uso gratuito, os desenvolvedores se eximem de qualquer responsabilidade por falhas e erros que possam ocorrer na ferramenta ou por problemas derivados a partir de seu uso. As certidões originais, emitidas pelos órgãos do poder público, devem ser consideradas as únicas fontes de informação juridicamente válidas. Deste modo, o uso das informações e relatórios produzidos pela ferramenta é de inteira responsabilidade do usuário e devem ser verificadas com as fontes originais.
 </p>
 
+### Screenshots:
+
+Janela Principal:
+
+<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/screenshot.png" align="center" height="200" hspace="20"> 
+
