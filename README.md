@@ -46,16 +46,11 @@ Por se tratar de um software de uso gratuito, os desenvolvedores se eximem de qu
 
 ### Screenshots:
 
-<span style="float: left;">
-Janela Principal:<br>
-<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/screenshots/screenshot.png" align="center" height="200" hspace="20"> 
-</span>
-<span style="float: left;">
-Certidões Carregadas:<br>
-<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/screenshots/screenshot_certidoes.png" align="center" height="200" hspace="20"> 
-</span>
-<span style="float: left;">
-Relatório de validação:<br>
-<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/screenshots/screenshot_navegador.png" align="center" height="200" hspace="20"> 
-</span>
+| [![Janela Principal](screenshots/screenshot.png)](http://videoblocks.com)  | [![Janela com certidões](screenshots/screenshot_certidoes.png)](http://audioblocks.com) 
+|:---:|:---:|
+| Janela Principal | Certides Carregadas | 
+
+Relatório de Validação
+![Relatório](screenshots/screenshot_navegador.png "Relatório de Validação")
+
 
