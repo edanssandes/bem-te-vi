@@ -46,11 +46,12 @@ Por se tratar de um software de uso gratuito, os desenvolvedores se eximem de qu
 
 ### Screenshots:
 
-| [![Janela Principal](screenshots/screenshot.png)](http://videoblocks.com)  | [![Janela com certidões](screenshots/screenshot_certidoes.png)](http://audioblocks.com) 
+| Janela Principal: | Certidões Carregadas: | 
 |:---:|:---:|
-| Janela Principal | Certides Carregadas | 
+| [![Janela Principal](screenshots/screenshot.png)](http://videoblocks.com)  | [![Janela com certidões](screenshots/screenshot_certidoes.png)](http://audioblocks.com) 
 
-Relatório de Validação
-![Relatório](screenshots/screenshot_navegador.png "Relatório de Validação")
+| Relatório de Validação: |
+|:---:|
+| ![Relatório](screenshots/screenshot_navegador.png "Relatório de Validação") |
 
 
