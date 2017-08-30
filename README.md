@@ -24,12 +24,6 @@ As certidões atualmente aceitas pelo Bem-te-vi são:
 * TRT 10º Região: Certidão de Distribuição de Ações Trabalhistas
 * TST: Certidão de Débitos Trabalhistas
 
-### Download
-
-Última Versão: 0.1.0060a
-
-Download: [bemtevi-0.1.0060a.jar](versoes/bemtevi-0.1.0060a.jar?raw=true)
-
 ### Processo de Validação
 
 O processo de validação das certidões é dividido em duas etapas: 
@@ -37,6 +31,16 @@ O processo de validação das certidões é dividido em duas etapas:
 1. identificar o tipo de certidão, extraindo todas as informações existentes tais como Nome, CPF/CNPJ, código de autenticação, data de validade, etc; 
 
 2. Validar o código de autenticação no site do órgão emissor, conferindo se a certidão é válida e se existe alguma informação adulterada. 
+
+### Download
+
+Última Versão: 0.1.0060a
+
+Download: [bemtevi-0.1.0060a.jar](versoes/bemtevi-0.1.0060a.jar?raw=true)
+
+### Pré-requisitos de Sistema
+
+Java versão 7 ou superior
 
 ### Observações:
 
