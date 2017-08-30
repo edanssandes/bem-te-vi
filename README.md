@@ -1,6 +1,6 @@
 # Bem-te-vi
 
-<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/logo/logo.png" align="left" height="120" hspace="50"> 
+<img src="https://raw.githubusercontent.com/edanssandes/bem-te-vi/master/logo/logo.png" align="left" height="180" hspace="50"> 
 
 <p align="justify">
 O <b>Bem-te-vi</b> é um aplicativo destinado a auxiliar no gerenciamento, catalogação e validação de arquivos de certidões pública brasileiras. 
@@ -32,7 +32,7 @@ Download: [bemtevi-0.1.0059a.jar](versoes/bemtevi-0.1.0059a.jar?raw=true)
 
 ### Processo de Validação
 
-O processo de validação é dividido em duas etapas: 
+O processo de validação das certidões é dividido em duas etapas: 
 
 1. identificar o tipo de certidão, extraindo todas as informações existentes tais como Nome, CPF/CNPJ, código de autenticação, data de validade, etc; 
 
