@@ -59,4 +59,15 @@ Por se tratar de um software de uso gratuito, os desenvolvedores se eximem de qu
 |:---:|
 | ![Relatório](screenshots/screenshot_navegador.png "Relatório de Validação") |
 
+### Diagnóstico de Rede
 
+Em caso de problemas de acesso por meio de proxy, segue uma listagem dos sites acessados pelo Bem-Te-Vi durante a validação das certidões:
+
+* https://www.sifge.caixa.gov.br
+* http://www.receita.fazenda.gov.br
+* http://www.fazenda.df.gov.br
+* http://portalservicos.jcdf.mdic.gov.br
+* http://procart.tjdft.jus.br e https://procart.tjdft.jus.br
+* http://www.trf1.jus.br
+* https://autenticador.trt10.jus.br e https://www.trt10.jus.br
+* http://aplicacao.jt.jus.br
