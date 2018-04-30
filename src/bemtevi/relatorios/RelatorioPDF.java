@@ -2,6 +2,7 @@ package bemtevi.relatorios;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -9,7 +10,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
@@ -38,6 +42,10 @@ public class RelatorioPDF {
 
 	public void save(File file) throws IOException {
 		PDDocument doc = new PDDocument();
+		InputStream in = RelatorioHTML.class
+				.getResourceAsStream("OpenSans-Regular.ttf");
+		PDType0Font font = PDType0Font.load(doc, in);
+		
 		PDPage page = new PDPage();
 		doc.addPage(page);
 		for (Certidao nadaConsta : nadaConstas) {
@@ -48,13 +56,13 @@ public class RelatorioPDF {
 
 		PDPageContentStream contentStream = new PDPageContentStream(doc, page);
 
-		drawTable(page, contentStream, 700, 100, nadaConstas);
+		drawTable(page, font, contentStream, 700, 100, nadaConstas);
 		contentStream.close();
 
 		doc.save(file);
 	}
 
-	public static float drawSection(PDPage page,
+	public static float drawSection(PDPage page, PDType0Font font,
 			PDPageContentStream contentStream, float y, float margin,
 			CertidoesSecao secao, String[][] table) throws IOException {
 		int rows = table.length;
@@ -69,11 +77,12 @@ public class RelatorioPDF {
 		// now add the text
 		PDFont fontHeader = PDType1Font.HELVETICA_BOLD;
 
-		PDFont font = PDType1Font.HELVETICA;
+		//PDFont font = PDType1Font.HELVETICA;
 
 		float colWidth[] = new float[cols];
 		for (int j = 0; j < cols; j++) {
 			for (int i = 0; i < rows; i++) {
+				table[i][j] = fixString(table[i][j], font);  // Evita caracteres inválidos para a codificação usada
 				String text = table[i][j];
 				float textWidth = font.getStringWidth(text) / 1000 * 8
 						+ cellMargin * 2;
@@ -153,7 +162,7 @@ public class RelatorioPDF {
 		return texty;
 	}
 
-	public static void drawTable(PDPage page,
+	public static void drawTable(PDPage page, PDType0Font font,
 			PDPageContentStream contentStream, float y, float margin,
 			Certidoes content) throws IOException {
 
@@ -171,11 +180,24 @@ public class RelatorioPDF {
 					table[i][1] = certidao.getCpfCnpj();
 				}
 			}
-
-			posy = drawSection(page, contentStream, posy, margin,
+			posy = drawSection(page, font, contentStream, posy, margin,
 					secao, table);
 		}
 
+	}
+	
+	private static String fixString(String text, PDType0Font font) throws IOException {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+        	char c = text.charAt(i);
+            if (font.hasGlyph(c)) { // WinAnsiEncoding.INSTANCE.contains(c) || c==9567) {
+                b.append(text.charAt(i));
+            } else {
+            	System.out.println(text.charAt(i));
+                b.append('_');
+            }
+        }
+        return b.toString();
 	}
 
 }

@@ -97,6 +97,7 @@ public class Preferencias {
 		if (file.exists()) {
 			properties.load(new FileInputStream(file));
 			String configVersion = properties.getProperty(KEY_CONFIG_VERSION);
+			// TODO testar configVersion == null
 			boolean updated = false;
 			while (configVersion != CONFIG_VERSION
 					&& converters.containsKey(configVersion)) {
