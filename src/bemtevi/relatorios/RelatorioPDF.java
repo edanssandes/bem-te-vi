@@ -42,7 +42,7 @@ public class RelatorioPDF {
 
 	public void save(File file) throws IOException {
 		PDDocument doc = new PDDocument();
-		InputStream in = RelatorioHTML.class
+		InputStream in = RelatorioPDF.class
 				.getResourceAsStream("OpenSans-Regular.ttf");
 		PDType0Font font = PDType0Font.load(doc, in);
 		
@@ -56,7 +56,7 @@ public class RelatorioPDF {
 
 		PDPageContentStream contentStream = new PDPageContentStream(doc, page);
 
-		drawTable(page, font, contentStream, 700, 100, nadaConstas);
+		drawTable(page, font, contentStream, 700, 50, nadaConstas);
 		contentStream.close();
 
 		doc.save(file);
@@ -193,7 +193,6 @@ public class RelatorioPDF {
             if (font.hasGlyph(c)) { // WinAnsiEncoding.INSTANCE.contains(c) || c==9567) {
                 b.append(text.charAt(i));
             } else {
-            	System.out.println(text.charAt(i));
                 b.append('_');
             }
         }

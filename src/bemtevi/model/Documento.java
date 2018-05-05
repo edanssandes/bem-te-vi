@@ -55,10 +55,11 @@ public class Documento {
 	private void parsePDF() throws IOException {
 		// Converte o PDF em texto
 
-		PDFParser parser = new PDFParser(new RandomAccessFile(file, "r"));
+		/*PDFParser parser = new PDFParser(new RandomAccessFile(file, "r"));
 		parser.parse();
 		COSDocument cosDoc = parser.getDocument();
-		this.pdf = new PDDocument(cosDoc);
+		this.pdf = new PDDocument(cosDoc);*/
+		this.pdf = PDDocument.load(file);
 		
 		this.textUnsorted = stripPDF(false);
 		this.textSorted = stripPDF(true);
