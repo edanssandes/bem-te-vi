@@ -115,6 +115,7 @@ public class ParserUtil {
 			con.setRequestProperty("Cookie", cookie);
 		}
 		if (postParams != null) {
+			con.setRequestMethod("POST");
 			con.setDoOutput(true);
 			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
 			writer.write(postParams);

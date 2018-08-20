@@ -119,7 +119,7 @@ public class ParserCertidaoReceitaFederal implements IParserCertidao, IValidador
 					"&txtCodCertidao=" + certidao.getCodigoAutenticacao() +
 					"&cboTipoCertidaoPGFN="+tipoCertidao.codigo+"&" +
 					"txtorigem=" + (certidao.getTipoPessoa() == Certidao.PESSOA_FISICA?"PF":"PJ");
-			WebResponse response = ParserUtil.downloadFromURL(new URL("http://www.receita.fazenda.gov.br/Aplicacoes/ATSPO/Certidao/certaut/CndConjunta/ConfirmaAutenticResultado.asp"), params, null);
+			WebResponse response = ParserUtil.downloadFromURL(new URL("http://servicos.receita.fazenda.gov.br/Servicos/certidao/certaut/CndConjunta/ConfirmaAutenticResultado.asp"), params, null);
 			String text = response.getText();
 			if (text.contains("A Certidão não é autêntica. Verifique os dados informados.")) {
 				throw new ValidationException("Certidão não é autêntica");
