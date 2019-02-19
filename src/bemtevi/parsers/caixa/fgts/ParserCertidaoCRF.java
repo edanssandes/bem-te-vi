@@ -26,6 +26,8 @@ import bemtevi.utils.WebResponse;
 public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 	private static final String NOME_CERTIDAO = "Certificado de Regularidade do FGTS";
 	private static final ParserInfo parserInfo = new ParserInfo(NOME_CERTIDAO);
+	
+	private static final String HOSTNAME = "https://consulta-crf.caixa.gov.br";
 
 	public ParserInfo getParserInfo() {
 		return parserInfo;
@@ -66,7 +68,7 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 			nadaConsta.setNomeFantasia(nomeFantasia);
 			nadaConsta.setEndereco(endereco);
 			nadaConsta
-					.setLinkValidacao("https://www.sifge.caixa.gov.br/Cidadao/Crf/FgeCfSCriteriosPesquisa.asp");
+					.setLinkValidacao(HOSTNAME + "/Cidadao/Crf/FgeCfSCriteriosPesquisa.asp");
 			return (nadaConsta);
 		} else {
 			return null;
@@ -78,8 +80,7 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 		try {
 			WebResponse response = ParserUtil
 					.downloadFromURL(
-							new URL(
-									"https://www.sifge.caixa.gov.br/Cidadao/Crf/FgeCfSCriteriosPesquisa.asp"),
+							new URL(HOSTNAME + "/Cidadao/Crf/FgeCfSCriteriosPesquisa.asp"),
 							null, null);
 			String texto = response.getText();
 			String cookie = response.getCookie();
@@ -103,8 +104,7 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 
 			WebResponse response2 = ParserUtil
 					.downloadFromURL(
-							new URL(
-									"https://www.sifge.caixa.gov.br/Cidadao/Crf/CheckCaptcha.asp?txtCaptchaVerificar="
+							new URL(HOSTNAME + "/Cidadao/Crf/CheckCaptcha.asp?txtCaptchaVerificar="
 											+ captcha), null, cookie);
 			texto = response2.getText();
 			System.out.println(texto);
@@ -116,8 +116,7 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 
 			WebResponse response3 = ParserUtil
 					.downloadFromURL(
-							new URL(
-									"https://www.sifge.caixa.gov.br/Cidadao/Crf/Crf/FgeCfSConsultaRegularidade.asp"),
+							new URL(HOSTNAME + "/Cidadao/Crf/Crf/FgeCfSConsultaRegularidade.asp"),
 							param, cookie);
 			texto = response3.getText();
 			System.out.println(texto);
@@ -138,8 +137,7 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 					+ "&VARPessoa=" + varPessoa;
 			WebResponse response4 = ParserUtil
 					.downloadFromURL(
-							new URL(
-									"https://www.sifge.caixa.gov.br/Cidadao/Crf/Crf/FgeCfSHistoricoStatusRegul.asp"),
+							new URL(HOSTNAME + "/Cidadao/Crf/Crf/FgeCfSHistoricoStatusRegul.asp"),
 							param4, cookie);
 			texto = response4.getText();
 			System.out.println(texto);
