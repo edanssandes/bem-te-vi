@@ -202,7 +202,7 @@ public class ParserCertidaoTRF1 implements IParserCertidao, IValidadorCertidao, 
 			
 			try {
 				String orgaoId = getIdFromOrgao(orgaoEmissor);
-				nadaConsta.setLinkValidacao(new URI("http", "www.trf1.jus.br",
+				nadaConsta.setLinkValidacao(new URI("https", "www.trf1.jus.br",
 								"/Servicos/Certidao/trf1_autenticacertidao.php",
 								"orgao="+orgaoId+"&nomeAut=" + nomeCompleto
 								+ "&cpf=" + cpfCnpj

@@ -35,9 +35,9 @@ O processo de validação das certidões é dividido em duas etapas:
 
 ### Download
 
-Última Versão: 0.2.0066a
+Última Versão: 0.2.0067a
 
-Download: [bemtevi-0.2.0066a.jar](versoes/bemtevi-0.2.0066a.jar?raw=true)
+Download: [bemtevi-0.2.0067a.jar](versoes/bemtevi-0.2.0067a.jar?raw=true)
 
 ### Pré-requisitos de Sistema
 
