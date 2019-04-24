@@ -25,7 +25,7 @@ import bemtevi.utils.WebResponse;
 
 
 public class ParserCertidaoReceitaFederal implements IParserCertidao, IValidadorCertidao {
-	private static final String NOME_CERTIDAO = "Certidão Relativa aos Tributos Federais e à Dívida Ativa da União - Receita Federal/PGFN";
+	private static final String NOME_CERTIDAO = "Certidão Relativa aos Tributos Federais e à Dívida Ativa da União - RFB/PGFN";
 	private static final ParserInfo parserInfo = new ParserInfo(NOME_CERTIDAO);
 
 	private enum TipoCertidao {

@@ -10,10 +10,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
@@ -35,42 +33,72 @@ import bemtevi.parsers.ParserCertidaoInvalida;
 public class RelatorioPDF {
 
 	private Certidoes nadaConstas;
+	private PDPage currentPage = null;
+	private PDPageContentStream contentStream = null;
+	private PDDocument doc = null;
+	private PDType0Font font = null;
+	private static final int MARGIN_BOTTON = 50;
+	private static final int MARGIN_TOP = 700;
+	private static final int MARGIN_LEFT = 50;
+	//private static final int MARGIN_RIGHT = 50;
+	private static final int MIN_Y_SECTION = 200;
 
 	public RelatorioPDF(Certidoes nadaConstas) {
 		this.nadaConstas = nadaConstas;
 	}
 
 	public void save(File file) throws IOException {
-		PDDocument doc = new PDDocument();
+		this.doc = new PDDocument();
 		InputStream in = RelatorioPDF.class
 				.getResourceAsStream("OpenSans-Regular.ttf");
-		PDType0Font font = PDType0Font.load(doc, in);
+		this.font = PDType0Font.load(doc, in);
 		
-		PDPage page = new PDPage();
-		doc.addPage(page);
+		createTOC();
 		for (Certidao nadaConsta : nadaConstas) {
 			for (int i = 0; i < nadaConsta.getDocumento().getPDF().getNumberOfPages(); i++) {
 				doc.addPage(nadaConsta.getDocumento().getPDF().getPage(i));
 			}
 		}
-
-		PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-
-		drawTable(page, font, contentStream, 700, 50, nadaConstas);
-		contentStream.close();
-
 		doc.save(file);
+		doc.close();
 	}
 
-	public static float drawSection(PDPage page, PDType0Font font,
-			PDPageContentStream contentStream, float y, float margin,
-			CertidoesSecao secao, String[][] table) throws IOException {
+	private void createTOC() throws IOException {
+		float y = updatePage(0);
+		drawTable(y, nadaConstas);
+		contentStream.close();
+	}
+
+	public void drawTable(float y, Certidoes content) throws IOException {
+
+		float posy = y;
+		for (CertidoesSecao secao : content.getSecoes()) {
+			int rows = secao.size();
+			String[][] table = new String[rows][2];
+			for (int i = 0; i < secao.size(); i++) {
+				Certidao certidao = secao.get(i);
+				if (certidao.getParser().getClass() == ParserCertidaoInvalida.class) {
+					table[i][0] = certidao.getDocumento().getName();
+					table[i][1] = "";
+				} else {
+					table[i][0] = certidao.getNome();
+					table[i][1] = certidao.getCpfCnpj();
+				}
+			}
+			System.out.println(posy);
+			posy = drawSection(posy, secao, table);
+			System.out.println(posy);
+		}
+
+	}	
+	
+	public float drawSection(float y, CertidoesSecao secao, String[][] table) throws IOException {
 		int rows = table.length;
 		int cols = table[0].length;
 
 		final float rowHeight = 10f;
-		final float tableWidth = page.getMediaBox().getWidth() - (2 * margin);
-		final float tableHeight = rowHeight * rows;
+		//final float tableWidth = currentPage.getMediaBox().getWidth() - MARGIN_LEFT - MARGIN_RIGHT;
+		//final float tableHeight = rowHeight * rows;
 		// final float colWidth = tableWidth / (float) cols;
 		final float cellMargin = 5f;
 
@@ -94,8 +122,12 @@ public class RelatorioPDF {
 		borderULine.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
 		borderULine.setWidth(0.5f); // 1/2 point
 
-		float textx = margin + cellMargin;
+		float textx = MARGIN_LEFT + cellMargin;
 		float texty = y - 15;
+		
+		if (texty < MIN_Y_SECTION) {
+			texty = updatePage(-1);
+		}
 
 		contentStream.setFont(fontHeader, 14);
 		contentStream.beginText();
@@ -150,40 +182,31 @@ public class RelatorioPDF {
 					PDActionGoTo action = new PDActionGoTo();
 					action.setDestination(dest);
 					txtLink.setAction(action);
-					List<PDAnnotation> annotations = page.getAnnotations();
+					List<PDAnnotation> annotations = currentPage.getAnnotations();
 					annotations.add(txtLink);
 				}
 
 				textx += colWidth[j];
 			}
 			texty -= rowHeight;
-			textx = margin + cellMargin;
+			textx = MARGIN_LEFT + cellMargin;
+			texty = updatePage(texty);
 		}
 		return texty;
 	}
 
-	public static void drawTable(PDPage page, PDType0Font font,
-			PDPageContentStream contentStream, float y, float margin,
-			Certidoes content) throws IOException {
-
-		float posy = y;
-		for (CertidoesSecao secao : content.getSecoes()) {
-			int rows = secao.size();
-			String[][] table = new String[rows][2];
-			for (int i = 0; i < secao.size(); i++) {
-				Certidao certidao = secao.get(i);
-				if (certidao.getParser().getClass() == ParserCertidaoInvalida.class) {
-					table[i][0] = certidao.getDocumento().getName();
-					table[i][1] = "";
-				} else {
-					table[i][0] = certidao.getNome();
-					table[i][1] = certidao.getCpfCnpj();
-				}
+	private float updatePage(float y) throws IOException {
+		if (y<MARGIN_BOTTON || this.currentPage == null) {
+			if (contentStream != null) {
+				contentStream.close();				
 			}
-			posy = drawSection(page, font, contentStream, posy, margin,
-					secao, table);
+			currentPage = new PDPage();
+			this.doc.addPage(currentPage);
+			contentStream = new PDPageContentStream(this.doc, currentPage);
+			contentStream.setFont(font, 8);
+			y = MARGIN_TOP;
 		}
-
+		return y;
 	}
 	
 	private static String fixString(String text, PDType0Font font) throws IOException {
