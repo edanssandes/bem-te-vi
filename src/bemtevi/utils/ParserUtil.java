@@ -127,6 +127,16 @@ public class ParserUtil {
 
 	}
 
+	public static int testUrl(URL url, int timeout) throws MalformedURLException, IOException,
+			UnsupportedEncodingException {
+		HttpURLConnection con = (HttpURLConnection)url.openConnection();
+		con.setConnectTimeout(timeout);
+		con.setReadTimeout(timeout);
+		
+		return con.getResponseCode();
+
+	}
+	
 
 	public static Certidao downloadCertidao(URL url, String postParams, String cookie, IParserCertidao parser)
 			throws MalformedURLException, IOException,

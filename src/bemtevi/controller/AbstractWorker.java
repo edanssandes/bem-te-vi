@@ -44,7 +44,7 @@ public abstract class AbstractWorker extends SwingWorker<Void, Void> {
 		synchronized (mainController) { // Barreira de Sincronização
 			try {
 				executeJob();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				// Tratamento de exceção
 				showErrorMessage(e);
 			} finally {
@@ -61,7 +61,7 @@ public abstract class AbstractWorker extends SwingWorker<Void, Void> {
 	 * @param e
 	 *            exceção a ser mostrada.
 	 */
-	protected void showErrorMessage(Exception e) {
+	protected void showErrorMessage(Throwable e) {
 		StringWriter errors = new StringWriter();
 		e.printStackTrace(new PrintWriter(errors));
 		e.printStackTrace();

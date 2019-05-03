@@ -9,6 +9,8 @@ import javax.swing.JOptionPane;
 import bemtevi.configs.PreferenciasProxy;
 import bemtevi.controller.AbstractWorker;
 import bemtevi.controller.MainController;
+import bemtevi.utils.ParserUtil;
+import bemtevi.utils.WebResponse;
 
 
 /**
@@ -22,9 +24,14 @@ public class WorkerTestarConexao extends AbstractWorker {
 	 */
 	private static String[] URLS = new String[] { 
 			"http://gmail.com",
-			"https://www.google.com", 
 			"http://www.terra.com.br",
 			"http://www.receita.fazenda.gov.br", 
+			"http://www.fazenda.df.gov.br",
+			"https://www.google.com", 
+			"https://receita.fazenda.gov.br",
+			"https://consulta-crf.caixa.gov.br",
+			"https://portal.trf1.jus.br",
+			"https://autenticador.trt10.jus.br",
 			MainController.PROJECT_WEBSITE 
 			};
 
@@ -72,11 +79,7 @@ public class WorkerTestarConexao extends AbstractWorker {
 				String msg = "";
 				try {
 					URL url = new URL(urlStr);
-					HttpURLConnection con = (HttpURLConnection) url
-							.openConnection();
-					con.setConnectTimeout(1000);
-					con.setReadTimeout(1000);
-					int ret = con.getResponseCode();
+					int ret = ParserUtil.testUrl(url, 1000);
 					msg = String.format(
 							"<font color='green'>[ OK ]</font> %20s: %3d",
 							urlStr, ret);

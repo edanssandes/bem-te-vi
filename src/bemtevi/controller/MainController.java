@@ -24,6 +24,7 @@ import bemtevi.AppVersion;
 import bemtevi.configs.Preferencias;
 import bemtevi.configs.PreferenciasPerfil;
 import bemtevi.configs.PreferenciasProxy;
+import bemtevi.controller.workers.WorkerBaixarAtualizacao;
 import bemtevi.controller.workers.WorkerCarregarCertidoes;
 import bemtevi.controller.workers.WorkerGerarRelatorio;
 import bemtevi.controller.workers.WorkerTestarConexao;
@@ -286,19 +287,25 @@ public class MainController {
 			reader.close();
 
 			if (!(latestVersion.equals(AppVersion.VERSION))) {
-				JOptionPane
-						.showMessageDialog(
+				int ret = JOptionPane
+						.showConfirmDialog(
 								getMainFrame(),
 								"<html>Existe uma versão mais atual do aplicativo: "
 										+ latestVersion
-										+ "<br>"
-										+ "Efetue o download a partir da página do projeto<br>"
+										+ "<br><br>"
+										+ "Clique em \"Ok\" para baixar a última versão ou<br>" 
+										+ "efetue o download a partir da página do projeto<br>"
 										+ "<a href='" + PROJECT_WEBSITE + "'>"
 										+ PROJECT_WEBSITE + "</a><html>",
 								"Verificação de Versão",
-								JOptionPane.INFORMATION_MESSAGE);
-				if (Desktop.isDesktopSupported()) {
-					Desktop.getDesktop().browse(new URI(PROJECT_WEBSITE));
+								JOptionPane.OK_CANCEL_OPTION);
+				if (ret == JOptionPane.YES_OPTION) {
+					WorkerBaixarAtualizacao worker = new WorkerBaixarAtualizacao(this, latestVersion);
+					worker.execute();
+				} else {
+					if (Desktop.isDesktopSupported()) {
+						Desktop.getDesktop().browse(new URI(PROJECT_WEBSITE));
+					}
 				}
 			} else {
 				JOptionPane
