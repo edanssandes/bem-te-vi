@@ -1,7 +1,11 @@
 package bemtevi.parsers.caixa.fgts;
 
+import java.awt.Image;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -9,7 +13,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+
+import sun.misc.BASE64Decoder;
+
 import bemtevi.model.Certidao;
+import bemtevi.model.CertidaoFactory;
 import bemtevi.model.Documento;
 import bemtevi.model.campos.CampoData;
 import bemtevi.model.campos.CampoDataValidade;
@@ -38,7 +48,7 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 		ParserUtilPattern pattern = new ParserUtilPattern(ParserUtilPattern.SIMPLE_SEARCH);
 		pattern.searchFirst("Certificado de Regularidade do FGTS", ParserUtilPattern.FILL_SPACES);
 		pattern.searchFirst("CRF");
-		pattern.search("Inscrição:\\s*([0-9/-]+)");
+		pattern.search("Inscrição:\\s*([0-9./-]+)");
 		pattern.search("Razão Social:\\s*(.*?)");
 		pattern.search("(?:Nome\\s*Fantasia:\\s*(.*?)\\s*)?");
 		pattern.search("Endereço:\\s*(.*?)");
@@ -78,73 +88,106 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 
 	public void validate(Certidao certidao) throws ValidationException, IOException {
 		try {
-			WebResponse response = ParserUtil
-					.downloadFromURL(
-							new URL(HOSTNAME + "/Cidadao/Crf/FgeCfSCriteriosPesquisa.asp"),
-							null, null);
-			String texto = response.getText();
-			String cookie = response.getCookie();
+			String cpfCnpj = certidao.getCpfCnpj().replaceAll("\\D", "");
+			String auth = certidao.getCodigoAutenticacao();
 
-			System.out.println(texto);
-			System.out.println(cookie);
-
-			Pattern p0 = Pattern
-					.compile("id=\"resultadopath\\d*\"\\s+value=\"(\\d{4})-(.*?)\"");
-			Matcher m0 = p0.matcher(texto);
-			String captcha = "";
-			while (m0.find()) {
-				int i = (Integer.parseInt(m0.group(1)));
-				char c = (char) ((i - 5047) + '0');
-				System.out.println(c);
-				captcha += c;
+			URL url = new URL(HOSTNAME + "/consultacrf/pages/consultaEmpregador.jsf");
+			
+			boolean regular = false;
+			String cookie = null;
+			String texto = null;
+			
+			int tentativa = 0;
+			String viewState = null;
+			
+			while (!regular && tentativa < 5) {
+				tentativa++;
+				WebResponse response = ParserUtil
+						.downloadFromURL(url, null, null);
+				texto = response.getText();
+				cookie = response.getCookie();
+				viewState = ParserCertidaoCRF.getViewState(texto);
+	
+				Pattern p0 = Pattern.compile("src=\"data:image/png;base64,(.*?)\"");
+				Matcher m0 = p0.matcher(texto);
+				String imageString = null;
+				if (m0.find()) {
+					imageString = m0.group(1);
+				} else {
+					throw new IOException("Não foi encontrada a imagem do captcha");
+				}
+	
+				Image image = decodeToImage(imageString);
+				String captcha = ParserUtil.askCaptcha(image);
+	
+				//String captcha = "12345";
+				
+				String params = "AJAXREQUEST=_viewRoot&" +
+				"mainForm%3AtipoEstabelecimento=1&" +
+				"mainForm%3AtxtInscricao1=" + cpfCnpj + "&" +
+				"mainForm%3Auf=&" +
+				"mainForm%3AtxtCaptcha="+ captcha +"&" +
+				"mainForm=mainForm&" +
+				"autoScroll=&" +
+				"javax.faces.ViewState=" + URLEncoder.encode(viewState, "UTF-8") + "&" +
+				"mainForm%3AbtnConsultar=mainForm%3AbtnConsultar&";
+				
+				System.out.println(texto);
+				System.out.println(cookie);
+	
+				WebResponse response2 = ParserUtil.downloadFromURL(url, params, cookie);
+				texto = response2.getText();
+				System.out.println(texto);
+				
+				
+				Pattern p1 = Pattern.compile("<span class=\"feedback-text\">(.*?)</span>", Pattern.DOTALL);
+				Matcher m1 = p1.matcher(texto);
+				String feedback = null;
+				if (m1.find()) {
+					feedback = m1.group(1);
+				} else {
+					throw new IOException("Erro de parser. Não foi possível ler a mensagem de feedback.");
+				}
+				
+				viewState = getViewState(texto);
+				
+				System.out.println(feedback);
+				if (feedback.contains("Captcha Inválido")) {
+					viewState = null;
+					JOptionPane.showMessageDialog(null, "Erro de validação do Captcha. Favor digitar novamente.");
+				} else if (feedback.contains("A EMPRESA abaixo identificada está REGULAR perante o FGTS")) {
+					regular = true;
+				} else {
+					throw new RuntimeException("Resposta não reconhecida: " + feedback);
+				}
 			}
-			System.out.println(captcha);
-			String cnpj = certidao.getCpfCnpj().replaceAll("\\.", "");
-			// 19161094%2F0001-09;
-
-			WebResponse response2 = ParserUtil
-					.downloadFromURL(
-							new URL(HOSTNAME + "/Cidadao/Crf/CheckCaptcha.asp?txtCaptchaVerificar="
-											+ captcha), null, cookie);
-			texto = response2.getText();
-			System.out.println(texto);
-
-			String param = "ImportWorkEmpregadorTipoInscricao=1&"
-					+ "tipoinscricao=1&"
-					+ "ImportWorkEmpregadorCodigoInscricaoAlfanum=" + cnpj
-					+ "&" + "ImportEstadoSigla=&" + "txtConsulta=" + captcha;
-
-			WebResponse response3 = ParserUtil
-					.downloadFromURL(
-							new URL(HOSTNAME + "/Cidadao/Crf/Crf/FgeCfSConsultaRegularidade.asp"),
-							param, cookie);
+			if (tentativa >= 5) {
+				throw new RuntimeException("Não foi possível validar o captcha");
+			}
+			
+			URL url2 = new URL(HOSTNAME + "/consultacrf/pages/consultaRegularidade.jsf");
+			String params2 = "AJAXREQUEST=_viewRoot&" +
+					"mainForm%3AcodAtivo=&" +
+					"mainForm%3AlistEmpFpas=true&" +
+					"mainForm%3AhidCodPessoa=0&" +
+					"mainForm%3AhidCodigo=0&" +
+					"mainForm%3AhidDescricao=&" +
+					"mainForm=mainForm&" +
+					"autoScroll=&" +
+					"javax.faces.ViewState=" + URLEncoder.encode(viewState, "UTF-8") + "&" +
+					"mainForm%3Aj_id54=mainForm%3Aj_id54&";		
+			WebResponse response3 = ParserUtil.downloadFromURL(url2, params2, cookie);
+			
 			texto = response3.getText();
 			System.out.println(texto);
-
-			Pattern p1 = Pattern
-					.compile("<input type=hidden name=\"(\\S+)\" value=\"(.*?)\">");
-			Matcher m1 = p1.matcher(texto);
-			Map<String, String> fields = new LinkedHashMap<String, String>();
-			while (m1.find()) {
-				fields.put(m1.group(1), m1.group(2));
-			}
-			System.out.println(fields);
-			String varPessoa = fields.get("VARPessoa");
-			String varPessoaMatriz = fields.get("VARPessoaMatriz");
-
-			String auth = certidao.getCodigoAutenticacao();
-			String param4 = "VARPessoaMatriz=" + varPessoaMatriz
-					+ "&VARPessoa=" + varPessoa;
-			WebResponse response4 = ParserUtil
-					.downloadFromURL(
-							new URL(HOSTNAME + "/Cidadao/Crf/Crf/FgeCfSHistoricoStatusRegul.asp"),
-							param4, cookie);
-			texto = response4.getText();
-			System.out.println(texto);
+			viewState = getViewState(texto);
 
 			Pattern p2 = Pattern
-					.compile("<tr[^>]*?><TD[^>]*?>(\\S+)</TD><TD[^>]*?>\\S+\\s+a\\s+(\\S+)</TD>\\s*<TD[^>]*?>&nbsp;"
-							+ auth + "</TD>\\s*</tr>");
+					.compile("<tr[^>]*?>" +
+							"<td[^>]*?><span[^>]*?>(\\S+?)</span></td>" +
+							"<td[^>]*?><span[^>]*?>\\S+?</span><span[^>]*?> a </span><span[^>]*?>(\\S+?)</span><br\\s*/></td>" +
+							"<td[^>]*?><span[^>]*?>"+auth+"</span></td>" +
+							"</tr>", Pattern.CASE_INSENSITIVE);
 			Matcher m2 = p2.matcher(texto);
 
 			if (!m2.find()) {
@@ -170,5 +213,42 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 			throw e;
 		}
 	}
+	
+	
+	private static String getViewState(String html) throws IOException {
+		Pattern p0 = Pattern.compile("<input.*?name=\"javax.faces.ViewState\".*?value=\"(\\S*?)\"");
+		Matcher m0 = p0.matcher(html);
+		String viewState = null;
+		if (m0.find()) {
+			return m0.group(1);
+		} else {
+			throw new IOException("Não foi encontrado o view state");
+		}
+	}
+	
+	// https://javapointers.com/tutorial/java-convert-image-to-base64-string-and-base64-to-image/
+	private static Image decodeToImage(String imageString) {
 
+        Image image = null;
+        byte[] imageByte;
+        try {
+            BASE64Decoder decoder = new BASE64Decoder();
+            imageByte = decoder.decodeBuffer(imageString);
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+            image = ImageIO.read(bis);
+            bis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+	
+	
+	public static void main(String[] args) throws IOException, ValidationException {
+		ParserCertidaoCRF parser = new ParserCertidaoCRF();
+		File f = new File("pdf/internet/crf/ASSOCIACAO MINEIRA DE MUNICIPIOS.pdf");
+		Certidao d = CertidaoFactory.parse(f, parser);
+		parser.validate(d);
+		//parser.validate(d);
+	}
 }
