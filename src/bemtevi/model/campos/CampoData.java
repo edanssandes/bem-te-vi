@@ -33,6 +33,7 @@ public class CampoData implements ICampoCertidao {
 	private static final DateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
 	private static final DateFormat formatTime = new SimpleDateFormat("HH:mm");
 	private static final DateFormat formatTimeSec = new SimpleDateFormat("HH:mm:ss");
+	private static final DateFormat formatDateISO = new SimpleDateFormat("yyyy-MM-dd'T00:00:00'");
 	
 	private static final DateFormat[] formats = {formatDateTimeSec, formatDateTime, formatDate};
 
@@ -154,6 +155,14 @@ public class CampoData implements ICampoCertidao {
 	public String getDia() {
 		return formatDate.format(date);	
 	}
+	
+	/**
+	 * Retorna uma string com a representação do dia no formato ISO-8601: yyyy-MM-ddT00:00:00.
+	 * @return string representando o dia.
+	 */
+	public String getDiaISO8601() {
+		return formatDateISO.format(date);	
+	}	
 	
 	/*
 	 * (non-Javadoc)

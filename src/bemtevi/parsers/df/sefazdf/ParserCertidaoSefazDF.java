@@ -28,9 +28,9 @@ import bemtevi.utils.WebResponse;
 public class ParserCertidaoSefazDF implements IParserCertidao, IValidadorCertidao {
 	private static final String NOME_CERTIDAO = "Certidão da Secretaria de Estado de Fazenda/DF";
 	private static final List<String> MESES = java.util.Arrays
-			.asList(new String[] { "", "Janeiro", "Fevereiro", "Março",
-					"Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro",
-					"Outubro", "Novembro", "Dezembro" });
+			.asList(new String[] { "", "janeiro", "fevereiro", "março",
+					"abril", "maio", "junho", "julho", "agosto", "setembro",
+					"outubro", "novembro", "dezembro" });
 	private static final ParserInfo parserInfo = new ParserInfo(NOME_CERTIDAO);
 	
 	public ParserInfo getParserInfo() {
@@ -40,12 +40,12 @@ public class ParserCertidaoSefazDF implements IParserCertidao, IValidadorCertida
 	public Certidao parse(Documento doc) {
 		ParserUtilPattern pattern = new ParserUtilPattern(ParserUtilPattern.MULTILINE_SEARCH);
 		pattern.searchFirst("DISTRITO FEDERAL");
-		pattern.search("SECRETARIA DE ESTADO DE FAZENDA");
+		pattern.search("SECRETARIA DE ESTADO DE (?:FAZENDA|ECONOMIA)");
 		pattern.search("SUBSECRETARIA DA RECEITA");
 		pattern.searchFirst("(CERTIDÃO.*?DE DÉBITOS.*?)", ParserUtilPattern.FULL_LINE);
-		pattern.searchNext("Válida até (\\d+) de (\\S+) de (\\d+)");
-		pattern.searchNext("Brasília\\S*?, (\\d+) de (\\S+) de (\\d+)");
-		pattern.searchNext("Certidão emitida (?:via internet|por \\S+) [àa]s (\\d+:\\d+:?\\d*)");
+		pattern.searchNext("Válida até (\\d+) de (\\S+) de (\\d+).\\s*");
+		pattern.search("(?:Brasília\\S*?,\\s*)?(?:(\\d+) de (\\S+) de (\\d+))?");
+		pattern.searchNext("Certidão emitida (?:via internet|por \\S+)\\s*(?:em\\s*(\\d+/\\d+/\\d+))? [àa]s (\\d+:\\d+:?\\d*)");
 		pattern.searchFirst("");
 		pattern.searchNext("(?:CERTIDÃO NR\\s*)?:\\s*([0-9-./]+)", ParserUtilPattern.FULL_LINE);
 		pattern.search("(?:NOME\\s*)?:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
@@ -58,16 +58,25 @@ public class ParserCertidaoSefazDF implements IParserCertidao, IValidadorCertida
 		if (matcher.find(true)) {
 			String resultado = matcher.nextGroup();
 			String validade_dia = matcher.nextGroup();
-			String validade_mes = "" + MESES.indexOf(matcher.nextGroup());
+			String validade_mes = "" + MESES.indexOf(matcher.nextGroup().toLowerCase());
 			String validade_ano = matcher.nextGroup();
 			String dataValidade = validade_dia + "/" + validade_mes + "/"
 					+ validade_ano;
 			String emissao_dia = matcher.nextGroup();
-			String emissao_mes = "" + MESES.indexOf(matcher.nextGroup());
+			String emissao_mes = matcher.nextGroup();
 			String emissao_ano = matcher.nextGroup();
-			String dataEmissao = emissao_dia + "/" + emissao_mes + "/"
-					+ emissao_ano;
+			String dataEmissao = matcher.nextGroup();
+			if (dataEmissao == null) {
+				if (emissao_mes != null) {
+					emissao_mes = "" + MESES.indexOf(emissao_mes.toLowerCase());
+				}
+				dataEmissao = emissao_dia + "/" + emissao_mes + "/"
+						+ emissao_ano;
+			}
 			String horaEmissao = matcher.nextGroup();
+			if (horaEmissao.length() == 5) {
+				horaEmissao += ":00";
+			}
 			
 			
 			String codigoAutenticacao = matcher.nextGroup();
@@ -84,7 +93,7 @@ public class ParserCertidaoSefazDF implements IParserCertidao, IValidadorCertida
 			nadaConsta.setCodigoAutenticacao(codigoAutenticacao);
 			if (resultado.equalsIgnoreCase("CERTIDÃO NEGATIVA DE DÉBITOS")) {
 				nadaConsta.setSituacao(CampoSituacao.CERTIDAO_NEGATIVA);
-			} else if (resultado.equalsIgnoreCase("CERTIDÃO POSITIVA DE DÉBITOS COM EFEITO DE NEGATIVA")) {
+			} else if (resultado.toUpperCase().startsWith("CERTIDÃO POSITIVA DE DÉBITOS COM EFEITO")) {
 				nadaConsta.setSituacao(new CampoSituacao(CampoSituacao.CERTIDAO_POSITIVA_COM_EFEITOS_DE_NEGATIVA,"..."));
 			} else if (resultado.equalsIgnoreCase("CERTIDÃO DE DÉBITOS")) {
 				nadaConsta.setSituacao(new CampoSituacao(CampoSituacao.CERTIDAO_POSITIVA, "..."));
@@ -108,46 +117,43 @@ public class ParserCertidaoSefazDF implements IParserCertidao, IValidadorCertida
 			String codigo = certidao.getCodigoAutenticacao().replaceAll("\\D",
 					"");
 			String cpfCnpj = certidao.getCpfCnpj().replaceAll("\\D", "");
-			String params = "certidao=" + codigo + "&destinatario=" + cpfCnpj;
+			
+			String params = "{\"NumeroCertidao\":\""+ codigo +"\",\"ArgumentoPesquisa\":\"" + cpfCnpj + "\"}";
 			WebResponse response = ParserUtil
 					.downloadFromURL(
 							new URL(
-									"http://www.fazenda.df.gov.br/aplicacoes/certidao/valida_certidao.cfm"),
-							params, null);
+									"https://ww1.receita.fazenda.df.gov.br/WPI/psv/api/emissao/validacao/certidao"),
+							params, null, "application/json");
 			String text = response.getText();
 
 			Map<String, String> expectedFields = new HashMap<String, String>();
-			expectedFields.put("res_certidao", certidao.getResultado());
+			expectedFields.put("NumeroCertidao", codigo);
+			expectedFields.put("ArgumentoPesquisa", cpfCnpj);
 			if (certidao.getSituacao().getSituacao() == CampoSituacao.CERTIDAO_NEGATIVA.getSituacao()) {
 				if (certidao.getNome().equals("NAO CADASTRADO")) {
-					expectedFields.put("res_certidao", "CERTIDAO NEGATIVA DE DEBITOS - NAO CADASTRADO");
+					expectedFields.put("ResultadoCertidao", "CERTIDAO NEGATIVA DE DEBITOS - NAO CADASTRADO");
 				} else {
-					expectedFields.put("res_certidao", "CERTIDÃO NEGATIVA DE DÉBITOS");
+					expectedFields.put("ResultadoCertidao", "CERTIDÃO NEGATIVA DE DÉBITOS");
 				}
 			} else if (certidao.getSituacao().getSituacao() == CampoSituacao.CERTIDAO_POSITIVA_COM_EFEITOS_DE_NEGATIVA.getSituacao()) {
-				expectedFields.put("res_certidao", "CERTIDÃO POSITIVA DE DÉBITOS COM EFEITO DE NEGATIVA");
+				expectedFields.put("ResultadoCertidao", "CERTIDÃO POSITIVA DE DÉBITOS COM EFEITO DE NEGATIVA");
 			} else if (certidao.getSituacao().getSituacao() == CampoSituacao.CERTIDAO_POSITIVA.getSituacao()) {
-				expectedFields.put("res_certidao", "CERTIDÃO DE DÉBITOS(?:\\s+-\\s+.*)?");
+				expectedFields.put("ResultadoCertidao", "CERTIDÃO DE DÉBITOS(?:\\s+-\\s+.*)?");
 			}			
-			expectedFields.put("hro_usu", certidao.getDataEmissao().getHora()
-					+ ":\\d+");
-			expectedFields
-					.put("dt_emissao", certidao.getDataEmissao().getDia());
-			expectedFields.put("dt_validade", certidao.getDataValidade()
-					.getDia());
+			//expectedFields.put("HorarioEmissao", certidao.getDataEmissao().getHoraSec()); // Dados imprecisos
+			expectedFields.put("DataEmissao", certidao.getDataEmissao().getDiaISO8601());
+			expectedFields.put("DataValidade", certidao.getDataValidade().getDiaISO8601());
 
-			if (text.matches("(?d).*<div id=\"div_conteudo_impressao\" name=\"div_conteudo_impressao\" >.*?Certidão não encontrada</div>.*")) {
+			if (text.matches("NumeroCertidao:\"\"")) {
 				throw new ValidationException("Certidão Inválida");
 			} else {
+				
 				List<String> camposDivergentes = new ArrayList<String>();
 				for (Entry<String, String> entry : expectedFields.entrySet()) {
 					String value = Normalizer.normalize(entry.getValue(),
 							Form.NFD).replaceAll(
 							"\\p{InCombiningDiacriticalMarks}+", "");
-					String expectedField = ".*<input name=\"" + entry.getKey()
-							+ "\" type=\"hidden\" value=\"\\s*" + value
-							+ "\\s*\">.*";
-					// String expectedField = ".*"+entry.getKey() + ".*";
+					String expectedField = ".*[{,]\"" + entry.getKey() + "\":\"" + value + "\"[},].*";
 					if (!text.matches(expectedField)) {
 						camposDivergentes.add(entry.getKey());
 					}

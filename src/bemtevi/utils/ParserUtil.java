@@ -103,8 +103,13 @@ public class ParserUtil {
 		return documentText;
 	}
 
-
 	public static WebResponse downloadFromURL(URL url, String postParams, String cookie)
+			throws MalformedURLException, IOException,
+			UnsupportedEncodingException {
+		return downloadFromURL(url, postParams, cookie, null);
+	}
+
+	public static WebResponse downloadFromURL(URL url, String postParams, String cookie, String contentType)
 			throws MalformedURLException, IOException,
 			UnsupportedEncodingException {
 		//CookieManager msCookieManager = new CookieManager();
@@ -113,6 +118,9 @@ public class ParserUtil {
 		con.setReadTimeout(10000);
 		if (cookie != null) {
 			con.setRequestProperty("Cookie", cookie);
+		}
+		if (contentType != null) {
+			con.setRequestProperty("Content-Type", contentType);
 		}
 		if (postParams != null) {
 			con.setRequestMethod("POST");

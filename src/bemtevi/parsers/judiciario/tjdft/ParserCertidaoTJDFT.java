@@ -24,7 +24,7 @@ import bemtevi.utils.ParserUtilPattern;
 import bemtevi.utils.WebResponse;
 
 
-public class ParserCertidaoTJDFT implements IParserCertidao, IValidadorCertidao {
+public class ParserCertidaoTJDFT implements IParserCertidao {//, IValidadorCertidao {
 	private static final String NOME_CERTIDAO = "Certidão de Distribuição - TJDFT";
 	private String savedCaptcha = null;
 	private String savedCookie = null;
@@ -86,7 +86,8 @@ public class ParserCertidaoTJDFT implements IParserCertidao, IValidadorCertidao 
 			nadaConsta.setDataEmissao(dataEmissao);
 			nadaConsta.setTipoCertidao(new CampoVerificado(acoes));
 
-			nadaConsta.setLinkValidacao("http://procart.tjdft.jus.br/sistjinternet/sistj?visaoId=tjdf.sistj.internet.certidao.apresentacao.VisaoValidacaoCertidaoInternet");
+			nadaConsta.setLinkValidacao("https://cnc.tjdft.jus.br/consulta-externa");
+			//nadaConsta.setLinkValidacao("http://procart.tjdft.jus.br/sistjinternet/sistj?visaoId=tjdf.sistj.internet.certidao.apresentacao.VisaoValidacaoCertidaoInternet");
 			nadaConsta.setFiliacao(filiacao);
 			return (nadaConsta);
 		} else {
@@ -95,7 +96,7 @@ public class ParserCertidaoTJDFT implements IParserCertidao, IValidadorCertidao 
 
 	}
 
-	public void validate(Certidao certidao) throws ValidationException, IOException {
+	/*public void validate(Certidao certidao) throws ValidationException, IOException {
 		try {
 			String captcha = null;
 			String auth = certidao.getCodigoAutenticacao();
@@ -146,6 +147,7 @@ public class ParserCertidaoTJDFT implements IParserCertidao, IValidadorCertidao 
 				idDaCertidaoParaBaixar = m0.group(1);
 			} else {
 				JOptionPane.showMessageDialog(null, "Sem idDaCertidaoParaBaixar");
+				throw new RuntimeException("Sem idDaCertidaoParaBaixar");
 			}
 			
 			String params1 = "visaoId=tjdf.sistj.internet.certidao.apresentacao.VisaoValidacaoCertidaoInternet&" +
@@ -172,6 +174,6 @@ public class ParserCertidaoTJDFT implements IParserCertidao, IValidadorCertidao 
 			throw new RuntimeException(e);
 		}
 		
-	}
+	}*/
 
 }
