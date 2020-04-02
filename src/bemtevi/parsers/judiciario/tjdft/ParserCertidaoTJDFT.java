@@ -8,6 +8,12 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import bemtevi.model.Certidao;
 import bemtevi.model.Documento;
 import bemtevi.model.campos.CampoData;
@@ -23,8 +29,9 @@ import bemtevi.utils.ParserUtilMatcher;
 import bemtevi.utils.ParserUtilPattern;
 import bemtevi.utils.WebResponse;
 
+ 
 
-public class ParserCertidaoTJDFT implements IParserCertidao {//, IValidadorCertidao {
+public class ParserCertidaoTJDFT implements IParserCertidao, IValidadorCertidao {
 	private static final String NOME_CERTIDAO = "Certidão de Distribuição - TJDFT";
 	private String savedCaptcha = null;
 	private String savedCookie = null;
@@ -96,84 +103,47 @@ public class ParserCertidaoTJDFT implements IParserCertidao {//, IValidadorCerti
 
 	}
 
-	/*public void validate(Certidao certidao) throws ValidationException, IOException {
-		try {
-			String captcha = null;
-			String auth = certidao.getCodigoAutenticacao();
-			String texto = "";
-			int tentativa = 0;
-			while (captcha == null && tentativa < 5) {
-				tentativa++;
-				Image image = null;
-				if (savedCaptcha == null || savedCookie == null) {
-					WebResponse response3 = ParserUtil.downloadFromURL(new URL("https://procart.tjdft.jus.br/sistjinternet/jcaptcha.jpg"), null, savedCookie);
-					savedCookie = response3.getCookie();
-					savedCaptcha = null;
-					image = response3.getImage();
-				}
-				if (savedCaptcha != null) {
-					captcha = savedCaptcha;
-				} else {
-					captcha = ParserUtil.askCaptcha(image);
-				}
-			
-				String params0 = "visaoId=tjdf.sistj.internet.certidao.apresentacao.VisaoValidacaoCertidaoInternet&" +
-						"comando=abrirValidacao&" +
-						"numeroDaCertidao="+auth+"&" +
-						"codigoDeSeguranca=" + captcha;
-				
-				WebResponse response2 = ParserUtil.downloadFromURL(new URL("https://procart.tjdft.jus.br/sistjinternet/sistj"), params0, savedCookie);
-				texto = response2.getText();
-				System.out.println(texto);
-				
-				if (texto.contains("title=\"Código de segurança inválido\"")) {
-					captcha = null;
-					savedCaptcha = null;
-					JOptionPane.showMessageDialog(null, "Erro de validação do Captcha. Favor digitar novamente.");
-				} else if (texto.contains("<p><b><i>ATENÇÃO:</i></b> O número informado é inválido.</p>")) {
-					throw new ValidationException("O código de segurança é inválido");
-				} else {
-					savedCaptcha = captcha;
-				}
-			}
-			if (tentativa >= 5) {
-				throw new RuntimeException("Não foi possível validar o captcha");
-			}
-
-			Pattern p0 = Pattern.compile("if \\(campoDestino!=null\\) campoDestino\\.value = '(\\d+)';");
-			Matcher m0 = p0.matcher(texto);
-			String idDaCertidaoParaBaixar = null;
-			if (m0.find()) {
-				idDaCertidaoParaBaixar = m0.group(1);
-			} else {
-				JOptionPane.showMessageDialog(null, "Sem idDaCertidaoParaBaixar");
-				throw new RuntimeException("Sem idDaCertidaoParaBaixar");
-			}
-			
-			String params1 = "visaoId=tjdf.sistj.internet.certidao.apresentacao.VisaoValidacaoCertidaoInternet&" +
-					"comando=downloadDaCertidao&" +
-					"numeroDaCertidao="+auth+"&" +
-					"codigoDeSeguranca=" + captcha + "&" +
-					"idDaCertidaoParaBaixar="+idDaCertidaoParaBaixar;	
-			Thread.sleep(100);
-			WebResponse response2 = ParserUtil.downloadFromURL(new URL("http://procart.tjdft.jus.br/sistjinternet/sistj"), params1, savedCookie);
-			texto = response2.getText();
-			
-			Pattern p = Pattern.compile("\\(\"src\",\"infra/Download.jsp\\?idd=(\\S+)\"\\)");
-			Matcher m = p.matcher(texto);
-			if (m.find()) {
-				URL downloadUrl = new URL("http://procart.tjdft.jus.br/sistjinternet/infra/Download.jsp?idd=" + m.group(1));
-				Certidao certidao2 = ParserUtil.downloadCertidao(downloadUrl, null, savedCookie, this);
-				certidao2.assertEquals(certidao);
-			}
-			
-		} catch (IOException e) {
-			throw e;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
+	public void validate(Certidao certidao) throws ValidationException, IOException {
+		String auth = certidao.getCodigoAutenticacao();
+		auth = auth.replace(".", "");
+		WebResponse response = ParserUtil.downloadFromURL(new URL("https://cnc-api.tjdft.jus.br/certidoes/valida_externo?codigo=" + auth), null, null);
+		String json = response.getText();
 		
-	}*/
-
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode jsonNode = mapper.readTree(json);
+		if (jsonNode.size() == 0) {
+			throw new ValidationException("Código de Autenticação não foi encontrado: " + auth);
+		}
+		System.out.println(jsonNode.size());
+		String cpf_cnpj = jsonNode.get(0).get("cpf_cnpj").asText();
+		String nome = jsonNode.get(0).get("nome").asText();
+		String codigo = jsonNode.get(0).get("codigo").asText();
+		String data_emissao = jsonNode.get(0).get("data_emissao").asText();
+		String data_validade = jsonNode.get(0).get("data_validade").asText();
+		String url_certidao = jsonNode.get(0).get("url_certidao").asText();
+		String situacao = jsonNode.get(0).get("situacao").asText();
+		
+		if (!cpf_cnpj.equals(certidao.getCpfCnpj().replaceAll("[/\\.-]", ""))) {
+			throw new ValidationException("CPF/CNPJ não confere: " + cpf_cnpj);
+		}
+		if (!nome.trim().equalsIgnoreCase(certidao.getNome().trim())) {
+			throw new ValidationException("CPF/CNPJ não confere: " + cpf_cnpj);
+		}
+		if (!codigo.equals(auth)) {
+			throw new ValidationException("Código de autenticação não confere: " + codigo);
+		}
+		if (!data_emissao.substring(0, 10).equals(certidao.getDataEmissao().getDiaISO8601().substring(0, 10))) {
+			throw new ValidationException("Data de Emissao não confere: " + data_emissao);
+		}
+		if (!data_validade.substring(0, 10).equals(certidao.getDataValidade().getDiaISO8601().substring(0, 10))) {
+			throw new ValidationException("Data de Emissao não confere: " + data_emissao);
+		}
+		if (!situacao.equals("finalizada")) {
+			throw new ValidationException("Situação da certidão ainda não foi finalizada");
+		}
+			
+		URL downloadUrl = new URL(url_certidao);
+		Certidao certidao2 = ParserUtil.downloadCertidao(downloadUrl, null, null, this);
+		certidao2.assertEquals(certidao);
+	}
 }

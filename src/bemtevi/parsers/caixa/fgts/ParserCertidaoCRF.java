@@ -118,7 +118,7 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 				}
 	
 				Image image = decodeToImage(imageString);
-				String captcha = ParserUtil.askCaptcha(image);
+				String captcha = ParserUtil.askCaptcha(image, "Caixa/CRF");
 	
 				//String captcha = "12345";
 				

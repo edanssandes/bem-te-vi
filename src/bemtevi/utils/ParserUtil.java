@@ -161,9 +161,9 @@ public class ParserUtil {
 		}
 	}
 	
-	public static String askCaptcha(Image image) {
+	public static String askCaptcha(Image image, String title) {
 		final JDialog frame = new JDialog();
-		frame.setTitle("Código");
+		frame.setTitle("Código: " + title);
 		frame.setPreferredSize(new Dimension(200,150));
 		frame.getContentPane().setBackground(Color.BLACK);
 	    JLabel label = new JLabel(new ImageIcon(image));

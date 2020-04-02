@@ -20,12 +20,10 @@ As certidões atualmente aceitas pelo Bem-te-vi são:
 * Receita Federal/PGFN: Certidão Relativa aos Tributos Federais e à Dívida Ativa da União
 * Sefaz/DF: Certidão da Secretaria de Estado de Fazenda/DF
 * RLE/DF: Registro de Licenciamento de Empresas
-* TJDFT: Certidão de Distribuição <sup>1</sup>
+* TJDFT: Certidão de Distribuição
 * TRF: Certidão Cíveis e Criminais
 * TRT 10º Região: Certidão de Distribuição de Ações Trabalhistas
 * TST: Certidão de Débitos Trabalhistas
-
-<sup>1</sup>: O TJDFT inseriu o recaptcha no seu novo sistema de certidões, impedindo a validação automática pelo Bem-te-vi.
 
 ### Processo de Validação
 
@@ -37,9 +35,9 @@ O processo de validação das certidões é dividido em duas etapas:
 
 ### Download
 
-Última Versão: 0.2.0071a
+Última Versão: 0.2.0072a
 
-Download: [bemtevi-0.2.0071a.jar](versoes/bemtevi-0.2.0071a.jar?raw=true)
+Download: [bemtevi-0.2.0072a.jar](versoes/bemtevi-0.2.0072a.jar?raw=true)
 
 ### Pré-requisitos de Sistema
 
