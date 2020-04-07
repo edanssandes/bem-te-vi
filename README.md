@@ -21,7 +21,7 @@ As certidões atualmente aceitas pelo Bem-te-vi são:
 * Sefaz/DF: Certidão da Secretaria de Estado de Fazenda/DF
 * RLE/DF: Registro de Licenciamento de Empresas
 * TJDFT: Certidão de Distribuição (criminal, cível, especial, e de falência e recuperação judicial)
-* TRF: Certidão Cíveis e Criminais
+* TRF: Certidão Cíveis, Criminais e JEF
 * TRT 10º Região: Certidão de Distribuição de Ações Trabalhistas
 * TST: Certidão de Débitos Trabalhistas
 
