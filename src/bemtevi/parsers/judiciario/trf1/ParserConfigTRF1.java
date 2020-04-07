@@ -21,7 +21,7 @@ public class ParserConfigTRF1 extends AbstractParserConfig {
 		if (selecionarOrgaosValidos) {
 			StringBuilder sb = new StringBuilder();
 			for (String orgao : orgaosValidos) {
-				sb.append("," + ParserCertidaoTRF1.getIdFromOrgao(orgao));
+				sb.append(";" + ParserCertidaoTRF1.getIdFromOrgao(orgao));
 			}
 			if (sb.length() > 0) {
 				properties.put(KEY_ORGAOS_VALIDOS, sb.substring(1));
@@ -30,7 +30,7 @@ public class ParserConfigTRF1 extends AbstractParserConfig {
 		if (selecionarTiposValidos) {
 			StringBuilder sb = new StringBuilder();
 			for (String tipo : tiposValidos) {
-				sb.append("," + tipo);
+				sb.append(";" + tipo);
 			}
 			if (sb.length() > 0) {
 				properties.put(KEY_TIPOS_VALIDOS, sb.substring(1));
@@ -45,7 +45,7 @@ public class ParserConfigTRF1 extends AbstractParserConfig {
 		selecionarOrgaosValidos = properties.containsKey(KEY_ORGAOS_VALIDOS);
 		if (selecionarOrgaosValidos) {
 			String sb = properties.getProperty(KEY_ORGAOS_VALIDOS);
-			String[] orgaos = sb.split(",");
+			String[] orgaos = sb.split(";");
 			for (String orgaoId : orgaos) {
 				orgaosValidos.add(ParserCertidaoTRF1.getOrgaoFromId(orgaoId));
 			}
@@ -53,7 +53,7 @@ public class ParserConfigTRF1 extends AbstractParserConfig {
 		selecionarTiposValidos = properties.containsKey(KEY_TIPOS_VALIDOS);
 		if (selecionarTiposValidos) {
 			String sb = properties.getProperty(KEY_TIPOS_VALIDOS);
-			String[] tipos = sb.split(",");
+			String[] tipos = sb.split(";");
 			for (String tipo : tipos) {
 				tiposValidos.add(tipo);
 			}

@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import bemtevi.AppVersion;
 import bemtevi.configs.convert.ConfigConverter0;
+import bemtevi.configs.convert.ConfigConverter1;
 import bemtevi.configs.convert.IConfigConverter;
 
 
@@ -36,7 +37,7 @@ public class Preferencias {
 	/**
 	 * Versão atual do arquivo de preferências.
 	 */
-	public static final String CONFIG_VERSION = "1";
+	public static final String CONFIG_VERSION = "2";
 
 	/**
 	 * Conversores utilizados para atualizar versões antigas de preferências.
@@ -63,6 +64,7 @@ public class Preferencias {
 	 */
 	static {
 		converters.put("0", new ConfigConverter0());
+		converters.put("1", new ConfigConverter1());
 	}
 
 	/**
@@ -99,7 +101,7 @@ public class Preferencias {
 			String configVersion = properties.getProperty(KEY_CONFIG_VERSION);
 			// TODO testar configVersion == null
 			boolean updated = false;
-			while (configVersion != CONFIG_VERSION
+			while (!configVersion.equals(CONFIG_VERSION)
 					&& converters.containsKey(configVersion)) {
 				properties = converters.get(configVersion).update(properties);
 				configVersion = properties.getProperty(KEY_CONFIG_VERSION);
