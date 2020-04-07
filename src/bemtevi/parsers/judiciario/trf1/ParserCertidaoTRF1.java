@@ -229,12 +229,12 @@ public class ParserCertidaoTRF1 implements IParserCertidao, IValidadorCertidao, 
 				throw new ValidationException("Certidão Inválida: Dados não conferem"); 
 			}
 			String[] expectedText = new String[] {
-					"Certid&atilde;o n&uacute;mero "+certidao.getCodigoAutenticacao()+" emitida via Internet &agrave;s "
-							+certidao.getDataEmissao().getHora() +" horas do dia "+certidao.getDataEmissao().getDia(),
-							"N A D A&nbsp;&nbsp;C O N S T A&nbsp;&nbsp;",
-							"em nome de " + certidao.getNome() + ",",
-							": " + certidao.getCpfCnpj(),
-							certidao.getOrgaoEmissao() + "</span>",
+					"Certid&atilde;o n&uacute;mero "+certidao.getCodigoAutenticacao()+" emitida via ",
+					"&agrave;s " +certidao.getDataEmissao().getHora() + " horas do dia "+certidao.getDataEmissao().getDia(),
+					"N A D A&nbsp;&nbsp;C O N S T A&nbsp;&nbsp;",
+					"em nome de " + certidao.getNome() + ",",
+					": " + certidao.getCpfCnpj(),
+					certidao.getOrgaoEmissao() + "</span>",
 			};
 			List<String> divergencias = new ArrayList<String>();
 			for (String string : expectedText) {
