@@ -46,7 +46,7 @@ public class ParserCertidaoRLE implements IParserCertidao, IValidadorCertidao {
 		pattern.search("(\\d+?)"); // Registro
 		pattern.search("(" + ParserUtil.REGEX_CNPJ + ")"); // CNPJ
 		pattern.search("(\\S*?)"); // IE: Nunca testei
-		pattern.searchNext("Área do estabelecimento ([\\d.,]+)");
+		pattern.searchNext("Área (?:do estabelecimento|Utilizada\\D{0,10}?)\\s*([\\d.,]+)");
 		pattern.searchFirst("LICENCIAMENTO DAS ATIVIDADES(.*)");
 		pattern.searchFirst("Valide o certificado no site \\S+ informando o CNPJ e o código (\\S+?)\\s");
 		ParserUtilMatcher matcher = pattern.matcher(doc.getTextInOrder());			
@@ -215,7 +215,15 @@ public class ParserCertidaoRLE implements IParserCertidao, IValidadorCertidao {
 			System.out.println(text2);
 			
 			if (!text2.contains("O código do certificado informado é válido.")) {
-				throw new ValidationException("Certidão Inválida");
+				Pattern perr = Pattern.compile("<div id=\"mensagensBody\"><ul><li class=\"INFO\">(.*?)</li></ul>");
+				Matcher merr = perr.matcher(text2);
+				String msg_erro = null;
+				if (merr.find()) {
+					msg_erro = "Certidão Inválida: " + merr.group(1);
+				} else {
+					msg_erro = "Certidão Inválida";
+				}
+				throw new ValidationException(msg_erro);
 			}
 			
 			URL downloadUrl = new URL("http://portalservicos.jcdf.mdic.gov.br/" +
