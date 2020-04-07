@@ -101,7 +101,7 @@ public class Preferencias {
 			String configVersion = properties.getProperty(KEY_CONFIG_VERSION);
 			// TODO testar configVersion == null
 			boolean updated = false;
-			while (!configVersion.equals(CONFIG_VERSION)
+			while (Integer.parseInt(configVersion) < Integer.parseInt(CONFIG_VERSION)
 					&& converters.containsKey(configVersion)) {
 				properties = converters.get(configVersion).update(properties);
 				configVersion = properties.getProperty(KEY_CONFIG_VERSION);
