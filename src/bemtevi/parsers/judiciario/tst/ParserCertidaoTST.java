@@ -76,25 +76,26 @@ public class ParserCertidaoTST implements IParserCertidao, IValidadorCertidao {
 		try {
 			// Primeira requisição: obtém o cookie, o código de download (pfnc) e o viewstate
 			WebResponse response0 = ParserUtil.downloadFromURL(
-							new URL("http://aplicacao.jt.jus.br/cndtCertidao/consultarCertidao.faces"),
+							new URL("https://cndt-certidao.tst.jus.br/consultarCertidao.faces"),
 							null, null);
 			String texto0 = response0.getText("utf-8");
 			String savedCookie = response0.getCookie();
 
-			Pattern p0 = Pattern.compile("window.parent.location = 'http://aplicacao.jt.jus.br/cndtCertidao/emissaoCertidao\\?pfnc=(\\d+)'.*"
-							+ "id=\"javax.faces.ViewState\" value=\"(.*?)\"", Pattern.MULTILINE);
+			Pattern p0 = Pattern.compile("window.parent.location = '/emissaoCertidao\\?pfnc=(\\d+)'.*"
+							+ "name=\"javax.faces.ViewState\" id=\"(.*?):javax.faces.ViewState.*?\" value=\"(.*?)\"", Pattern.MULTILINE);
 			Matcher m0 = p0.matcher(texto0);
 			if (!m0.find()) {
 				throw new IOException("Erro no conteúdo da validação do TST (1).");
 			}
 			String pfnc = m0.group(1);
-			String viewState = m0.group(2);
+			String ajaxId = m0.group(2);
+			String viewState = m0.group(3);
 
 			// Dividindo o código de autenticação - codigo/ano - ex. "45540059/2014" 
 			String[] codigoAutenticacao = certidao.getCodigoAutenticacao().split("/"); 
 
 			// Segunda requisição: usada para informar os dados da certidão
-			String params1 = "AJAXREQUEST=j_id_jsp_1421772967_0&"
+			String params1 = "AJAXREQUEST="	+ ajaxId + "&"
 					+ "validarCertidaoForm=validarCertidaoForm&"
 					+ "validarCertidaoForm%3AcpfCnpj=" + certidao.getCpfCnpj() + "&"
 					+ "validarCertidaoForm%3AnumCertidao=" + codigoAutenticacao[0] + "&"
@@ -103,7 +104,7 @@ public class ParserCertidaoTST implements IParserCertidao, IValidadorCertidao {
 					+ "validarCertidaoForm%3AbtnValidarCertidao=validarCertidaoForm%3AbtnValidarCertidao&";
 
 			WebResponse response = ParserUtil.downloadFromURL(
-							new URL("http://aplicacao.jt.jus.br/cndtCertidao/consultarCertidao.faces"),
+							new URL("https://cndt-certidao.tst.jus.br/consultarCertidao.faces"),
 							params1, savedCookie);
 			
 			// Identifica se o site emitiu algum erro de validação
@@ -119,7 +120,7 @@ public class ParserCertidaoTST implements IParserCertidao, IValidadorCertidao {
 			}
 			
 			// Terceira Requisição: Download da certidão pelo site oficial
-			URL downloadUrl = new URL("http://aplicacao.jt.jus.br/cndtCertidao/emissaoCertidao?pfnc=" + pfnc);
+			URL downloadUrl = new URL("https://cndt-certidao.tst.jus.br/emissaoCertidao?pfnc=" + pfnc);
 			Certidao certidao2 = ParserUtil.downloadCertidao(downloadUrl, null, savedCookie, this);
 			certidao2.assertEquals(certidao);
 

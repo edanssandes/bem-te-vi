@@ -48,11 +48,12 @@ public class ParserCertidaoSefazDF implements IParserCertidao, IValidadorCertida
 		pattern.searchNext("Certidão emitida (?:via internet|por \\S+)\\s*(?:em\\s*(\\d+/\\d+/\\d+))? [àa]s (\\d+:\\d+:?\\d*)");
 		pattern.searchFirst("");
 		pattern.searchNext("(?:CERTIDÃO NR\\s*)?:\\s*([0-9-./]+)", ParserUtilPattern.FULL_LINE);
-		pattern.search("(?:NOME\\s*)?:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
-		pattern.search("(?:ENDEREÇO\\s*)?:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
+		pattern.search("(?:NOME\\s*)?:?\\s*(.*?)", ParserUtilPattern.FULL_LINE);
+		pattern.search("\\s*(.*)");
+		/*pattern.search("(?:ENDEREÇO\\s*)?:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
 		pattern.search("(?:CIDADE\\s*)?:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
 		pattern.search("(?:CPF\\s*)?:?\\s*("+ParserUtil.REGEX_CPF+")?", ParserUtilPattern.FULL_LINE);
-		pattern.search("(?:CNPJ\\s*)?:?\\s*("+ParserUtil.REGEX_CNPJ+")?", ParserUtilPattern.FULL_LINE);
+		pattern.search("(?:CNPJ\\s*)?:?\\s*("+ParserUtil.REGEX_CNPJ+")?", ParserUtilPattern.FULL_LINE);*/
 		ParserUtilMatcher matcher = pattern.matcher(doc.getText());			
 		
 		if (matcher.find(true)) {
@@ -81,10 +82,32 @@ public class ParserCertidaoSefazDF implements IParserCertidao, IValidadorCertida
 			
 			String codigoAutenticacao = matcher.nextGroup();
 			String nomeCompleto = matcher.nextGroup().replace("\n"," ");
-			String endereco = matcher.nextGroup().replace("\n"," ");
-			String cidade = matcher.nextGroup();
-			String cpf = matcher.nextGroup();
-			String cnpj = matcher.nextGroup();
+			String restante = matcher.nextGroup();
+					
+			ParserUtilPattern pattern2 = new ParserUtilPattern(ParserUtilPattern.MULTILINE_SEARCH);
+			if (restante.contains("CPF:") || restante.contains("CNPJ:")) {
+				pattern2.setOptional(true);
+				pattern2.searchFirst(".*?ENDEREÇO:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
+				pattern2.searchFirst(".*?CIDADE:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
+				pattern2.searchFirst(".*?CPF:\\s*("+ParserUtil.REGEX_CPF+")?", ParserUtilPattern.FULL_LINE);
+				pattern2.searchFirst(".*?CNPJ:\\s*("+ParserUtil.REGEX_CNPJ+")?", ParserUtilPattern.FULL_LINE);
+			} else {
+				pattern2.search("(?:ENDEREÇO\\s*)?:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
+				pattern2.search("(?:CIDADE\\s*)?:\\s*(.*?)", ParserUtilPattern.FULL_LINE);
+				pattern2.search("(?:CPF\\s*)?:?\\s*("+ParserUtil.REGEX_CPF+")?", ParserUtilPattern.FULL_LINE);
+				pattern2.search("(?:CNPJ\\s*)?:?\\s*("+ParserUtil.REGEX_CNPJ+")?", ParserUtilPattern.FULL_LINE);
+			}
+			ParserUtilMatcher matcher2 = pattern2.matcher(restante);
+			if (!matcher2.find(true)) {
+				throw new RuntimeException("Metadados CPF/CNPJ/CIDADE/ENDEREÇO ausentes na certidão da Sefaz. "
+						+ "Provavelmente houve alguma mudança de layout na certidão.");
+			}
+			String endereco = matcher2.nextGroup();
+			endereco = endereco == null ? "" : endereco.replace("\n"," ");
+			String cidade = matcher2.nextGroup();
+			cidade = cidade == null ? "" : cidade.replace("\n"," ");
+			String cpf = matcher2.nextGroup();
+			String cnpj = matcher2.nextGroup();
 			String cpfCnpj = cpf==null || cpf.length()==0? cnpj : cpf;
 
 			Certidao nadaConsta = new Certidao(NOME_CERTIDAO);

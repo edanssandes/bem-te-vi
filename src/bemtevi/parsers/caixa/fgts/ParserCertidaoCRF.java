@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
-import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Decoder;
+//import java.util.Base64; 
 
 import bemtevi.model.Certidao;
 import bemtevi.model.CertidaoFactory;
@@ -227,13 +228,14 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
 	}
 	
 	// https://javapointers.com/tutorial/java-convert-image-to-base64-string-and-base64-to-image/
-	private static Image decodeToImage(String imageString) {
+	/*private static Image decodeToImage(String imageString) {
 
         Image image = null;
         byte[] imageByte;
         try {
-            BASE64Decoder decoder = new BASE64Decoder();
-            imageByte = decoder.decodeBuffer(imageString);
+            //BASE64Decoder decoder = new BASE64Decoder();
+            //imageByte = decoder.decodeBuffer(imageString);
+        	imageByte = Base64.getDecoder().decode(imageString.getBytes());
             ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
             image = ImageIO.read(bis);
             bis.close();
@@ -241,8 +243,53 @@ public class ParserCertidaoCRF implements IParserCertidao, IValidadorCertidao {
             e.printStackTrace();
         }
         return image;
-    }
+    }*/
 	
+	// https://stackoverflow.com/questions/469695/decode-base64-data-in-java
+	/**
+     * Translates the specified Base64 string into a byte array.
+     *
+     * @param s the Base64 string (not null)
+     * @return the byte array (not null)
+     */
+	private static Image decodeToImage(String s) {
+		char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+	    int[] toInt = new int[128];
+
+        for(int i=0; i< ALPHABET.length; i++){
+            toInt[ALPHABET[i]]= i;
+        }
+	        
+        int delta = s.endsWith( "==" ) ? 2 : s.endsWith( "=" ) ? 1 : 0;
+        byte[] buffer = new byte[s.length()*3/4 - delta];
+        int mask = 0xFF;
+        int index = 0;
+        for(int i=0; i< s.length(); i+=4){
+            int c0 = toInt[s.charAt( i )];
+            int c1 = toInt[s.charAt( i + 1)];
+            buffer[index++]= (byte)(((c0 << 2) | (c1 >> 4)) & mask);
+            if(index >= buffer.length){
+                break;
+            }
+            int c2 = toInt[s.charAt( i + 2)];
+            buffer[index++]= (byte)(((c1 << 4) | (c2 >> 2)) & mask);
+            if(index >= buffer.length){
+                break;
+            }
+            int c3 = toInt[s.charAt( i + 3 )];
+            buffer[index++]= (byte)(((c2 << 6) | c3) & mask);
+        }
+        
+        Image image = null;
+        try { 
+            ByteArrayInputStream bis = new ByteArrayInputStream(buffer);
+        	image = ImageIO.read(bis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return image;
+    } 	
+		
 	
 	public static void main(String[] args) throws IOException, ValidationException {
 		ParserCertidaoCRF parser = new ParserCertidaoCRF();
