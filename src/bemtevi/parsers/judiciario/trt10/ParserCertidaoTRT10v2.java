@@ -108,8 +108,13 @@ public class ParserCertidaoTRT10v2 implements IParserCertidao, IValidadorCertida
 
 	public void validate(Certidao certidao) throws ValidationException, IOException {
 		URL downloadUrl = new URL(certidao.getLinkValidacao());
+		URL certidaoOnlineUrl = new URL("https://www.trt10.jus.br/certidao_online/jsf/publico/certidaoOnline.jsf");
+		URL visualizaUrl = new URL("https://www.trt10.jus.br/certidao_online/ServletVisualizaDocumento?nomeArquivo=Certidao&tipoDownload=inline&tipoConteudo=application_pdf");
+		
 		WebResponse res = ParserUtil.downloadFromURL(downloadUrl, null, null);
-		Certidao certidao2 = ParserUtil.downloadCertidao(downloadUrl, null, res.getCookie(), this);
+		WebResponse res2 = ParserUtil.downloadFromURL(certidaoOnlineUrl, null, res.getCookie());
+		
+		Certidao certidao2 = ParserUtil.downloadCertidao(visualizaUrl, null, res.getCookie(), this);
 		certidao2.assertEquals(certidao, null);
 	}
 

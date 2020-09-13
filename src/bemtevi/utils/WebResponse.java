@@ -21,6 +21,8 @@ public class WebResponse {
 	private InputStream is;
 	private HttpURLConnection con;
 	private String cookie;
+	private int responseCode;
+	
 	public WebResponse(InputStream is, String cookie) {
 		this.is = is;
 		this.cookie = cookie;
@@ -28,6 +30,7 @@ public class WebResponse {
 	
 	public WebResponse(HttpURLConnection con) throws IOException {
 		this.con = con;
+		this.responseCode = con.getResponseCode();
 		this.is = con.getInputStream();			
 		
 		if (cookie == null) {
@@ -103,6 +106,10 @@ public class WebResponse {
 		out.close();
 		disconnect();
 		return !empty;
+	}
+
+	public int getResponseCode() {
+		return responseCode;
 	}
 
 }
