@@ -22,7 +22,7 @@ public class ParserConfigDialogTRF1 extends AbstractParserDialog {
 	private JCheckBox cbSelectTipos = new JCheckBox("Selecionar tipos válidos de certidão");
 	
 	public ParserConfigDialogTRF1() {
-		Set<String> names = ParserCertidaoTRF1.getNomeOrgaos();
+		Set<String> names = ConstantesTRF1.getNomeOrgaos();
 		dualListOrgaos.setSourceChoicesTitle("Órgãos Inválidos");
 		dualListOrgaos.setDestinationChoicesTitle("Órgãos Válidos");
 		dualListOrgaos.setFont(dualListOrgaos.getFont().deriveFont(10.0f));
@@ -38,7 +38,7 @@ public class ParserConfigDialogTRF1 extends AbstractParserDialog {
 			}
 		});
 		
-		List<String> tipos = ParserCertidaoTRF1.getTiposCertidao();
+		List<String> tipos = ConstantesTRF1.getTiposCertidao();
 		dualListTipos.setSourceChoicesTitle("Tipos Inválidos");
 		dualListTipos.setDestinationChoicesTitle("Tipos Válidos");
 		dualListTipos.setFont(dualListOrgaos.getFont().deriveFont(10.0f));

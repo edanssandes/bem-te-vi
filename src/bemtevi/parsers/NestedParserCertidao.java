@@ -29,4 +29,14 @@ public abstract class NestedParserCertidao implements IParserCertidao {
 		}
 		return certidao;
 	}
+	
+	public void setNestedConfig(AbstractParserConfig config) {
+		for (IParserCertidao parser : childParsers) {
+			if (parser instanceof IParserConfigurable) {
+				IParserConfigurable configurable = (IParserConfigurable)parser;
+				configurable.setConfig(config);
+			}
+
+		}
+	}
 }

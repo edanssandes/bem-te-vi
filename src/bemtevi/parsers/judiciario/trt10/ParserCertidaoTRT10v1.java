@@ -125,8 +125,8 @@ public class ParserCertidaoTRT10v1 implements IParserCertidao, IValidadorCertida
 		try {
 			url = new URL(certidao.getLinkValidacao());
 			URLConnection con = url.openConnection();
-			con.setConnectTimeout(3000);
-			con.setReadTimeout(3000);
+			con.setConnectTimeout(5000);
+			con.setReadTimeout(5000);
 			InputStream is = con.getInputStream();			
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					is, "ISO-8859-1"));

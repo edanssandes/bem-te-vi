@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 
-import bemtevi.parsers.judiciario.trf1.ParserCertidaoTRF1;
+import bemtevi.parsers.judiciario.trf1.ConstantesTRF1;
 
 
 // Adaptado de ttp://www.java2s.com/Tutorials/Java/Swing/JList/Create_a_dual_list_control_with_JList_in_Java.htm
@@ -549,7 +549,7 @@ public class DualList<T> extends JPanel {
 	}
 
 	public static void main(String args[]) {
-		Set<String> names = ParserCertidaoTRF1.getNomeOrgaos();
+		Set<String> names = ConstantesTRF1.getNomeOrgaos();
 		JFrame f = new JFrame("Dual List Box Tester");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		DualList dual = new DualList();

@@ -29,6 +29,7 @@ public class CampoData implements ICampoCertidao {
 	/* Formatos aceitos para o campo de data */
 	
 	private static final DateFormat formatDateTimeSec = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	private static final DateFormat formatDateTimePeriod = new SimpleDateFormat("dd/MM/yyyy h:mm a");
 	private static final DateFormat formatDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final DateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
 	private static final DateFormat formatTime = new SimpleDateFormat("HH:mm");
@@ -72,6 +73,17 @@ public class CampoData implements ICampoCertidao {
 	 * @param dateStr string contendo a data.
 	 */
 	public CampoData(String dateStr) {
+		
+		try {
+			// Tenta converte uma data no formato h:mm AM/PM para hh:mm (sem AM/PM)
+			// Essa conversão é necessária para deixar os horários padronizados
+			Date date = formatDateTimePeriod.parse(dateStr);
+			dateStr = formatDateTime.format(date);
+		} catch (ParseException e) {
+			// Ignora, pois a data não possuía AM/PM
+		}
+		
+		
 		this.dateStr = dateStr;
 		
 		date = null;
