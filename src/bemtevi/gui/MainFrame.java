@@ -244,7 +244,7 @@ public class MainFrame extends JFrame {
 		getContentPane().remove(layout.getLayoutComponent(BorderLayout.CENTER));
 		getContentPane().add(pane, BorderLayout.CENTER);
 		setCertidoesMenusEnabled(certidoes.size() > 0);
-		revalidate();
+		//revalidate();
 		getGlassPane().setVisible(true);
 	}
 

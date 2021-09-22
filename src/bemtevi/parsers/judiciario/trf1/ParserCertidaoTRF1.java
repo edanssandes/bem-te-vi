@@ -16,6 +16,7 @@ public class ParserCertidaoTRF1 extends NestedParserCertidao implements IParserC
 		super(new IParserCertidao[] {
 				new ParserCertidaoTRF1v1(),
 				new ParserCertidaoTRF1v2(),
+				new ParserCertidaoTRF1v3(),
 		});
 	}
 
